@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ title>To-Do List</title>
+ style>
+    *, *::before, *::after { box: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans; background: #0a0a0a; color: #e5e5e5; min-height: 100vh; }
+    :root { --: #6366f1; }
+   , textarea, select {
+      background: rgba(255,255,,0.07);
+      border: 1px solid rgba(255,255,2550.15);
+      border-radius: 8px;
+      color: #e5e5e5;
+     : 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      width 100%;
+     : border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); box: 0 0 0 3px rgba(99,102,241,0.15); }
+    input::placeholder, textarea::placeholder { color: rgba(255,255255,0.35); }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family inherit;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    button:hover { opacity: 0.85; }
+   :active { transform: scale(0.97); }
+    button.secondary { background: rgba(255,255,255,0.08 color: #ee5e5; }
+    .card background: rgba(,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; }
+    .container { max-width: 1200px; margin: 40px auto; display: flex; flex-wrap: wrap; justify: center; }
+    . { width: 100%; margin: 20px; }
+    .tarefa { background: rgba(255,255,255,0.05); border: 1px rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin: 10px; }
+   tarefa.concluida { text-decoration: line-through }
+    .prioridade { font-size: 12px; margin-left: 10px; }
+    .prioridade.baixa { color: #8bc34a; }
+    .prioridade.media { color: #ffc107; }
+    .prioridade.alta { color: #f44336; }
+  </style>
+</head>
+<body>
+  < class="container">
+ <h1>To-Do List</h1>
+    <button id="adicionar-tarefa">Adicionar Tarefa</button>
+    <input id="pesquisa" type="search" placeholder="Pesquisar...">
+    <select id="filtro">
+      <option value="todas">Tas</option>
+      <option value="pendentes">Pendentes</option>
+     option value="concluidas">Concluídas</option>
+    </select>
+    <span id="contador-pendentes">Tarefas pendentes: <span id="numero-pendentes">0</span></span>
+    <div id="lista-tarefas" class="lista"></>
+  </div>
+
+  <script>
+    let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+    let filtro = 'todas';
+    let pesquisa = '';
+
+    function atualizarLista() {
+      const listaTarefas = document.getElementById('lista-tarefas');
+      listaTarefas.innerHTML = '';
+      let pendentes = 0;
+      tarefas.forEach((tarefa, index) => {
+        if (filtro === 'todas' || (filtro === 'pendentes' && !tarefa.concl) || (filtro === 'concluidas' && tarefa.concluida)) {
+          if (tarefa.titulo.toLowerCase().includes(pesquisa.toLowerCase())) {
+            const tarefaElement = document.createElement('div');
+            tarefaElement.classList.add('tarefa');
+            if (tarefa.conuida) {
+              tarefaElement.classList.add('concluida');
+            }
+            tarefaElement.innerHTML = `
+              <span>${tarefa.titulo}</span>
+              <span class="prioridade ${tarefa.prioridade}">${tarefa.prioridade}</span>
+              <button class="secondary" onclick="editarTarefa(${index})">Editar</button>
+              <button class="secondary" onclick="removerTarefa(${index})">Remover</button>
+              <button class="secondary" onclick="concluirTarefa(${index})">Concluir</button>
+            `;
+            listaTarefas.appendChild(tarefaElement);
+            if (!tarefa.concluida) {
+              pendentes++;
+            }
+          }
+        }
+      });
+      document.getElementById('numero-pendentes'). = pendentes;
+    }
+
+    function adicionarTarefa() {
+      const titulo = prompt('Digite o título da tarefa:');
+      const prioridade = promptDigite a prioridade da tarefa (baixa, média, alta):');
+      if (titulo && prioridade) {
+        tarefas.push({, prioridade, concluida: false });
+        localStorage.setItem('tfas', JSON.stringify(tarefas));
+        atualizarLista();
+      }
+    }
+
+    function editarTarefa(index) {
+      const titulo = prompt('Digite o novo título da tarefa:');
+      const prioridade = prompt('Digite a nova prioridade da tarefa (baixa, média, alta):');
+      if (titulo prioridade) {
+        tarefas[index].titulo = titulo;
+        tarefas[index].prioridade = prioridade;
+        localStorage.setItem('tarefas', JSON.stringify(tarefas));
+        atualizarLista();
+      }
+    }
+
+    function removerTarefa(index) {
+      tarefas.splice(index, 1);
+      localStorage.setItem('tarefas', JSON.stringify(tare));
+      atualizarLista();
+    }
+
+    function concluirTarefa(index {
+      tarefas[index].concluida = true;
+     .setItem('tarefas', JSON.stringify(tarefas));
+      atualizarLista();
+    }
+
+    document.getElementById('adicionar-tarefa').addEventListener('click', adicionarTarefa);
+    document.getElementById('filtro').addEventListener('change', (e) => {
+      filtro = e.target.value;
+      atualizarLista();
+    });
+    document.getElementById('pesquisa').addEventListener('input', (e) => {
+      pesquisa = e.target.value;
+      atualizarLista();
+    });
+
+    // Dados de exemplo realistas em português
+    if (tarefas.length ===0) {
+      tarefas = [
+        { titulo: 'Comprar leite', prioridade: 'baixa', concluida: false },
+ { titulo: 'Fazer exercícios', prioridade: 'média', concluida: false },
+        { titulo: 'Entregar projeto', prioridade: 'alta', concluida: false },
+        { titulo: 'Ler livro', prioridade 'baixa', concluida: true },
+        { titulo: 'Ir ao cinema', prior: 'média', concluida: true },
+      ];
+      localStorage.setItem('tarefas', JSON.stringify(tarefas));
+       atualizarLista();
+  </script>
+</body>
+</html>
